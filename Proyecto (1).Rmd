@@ -1,0 +1,76 @@
+---
+title:  Proyecto final Parte 1. MAT3 (estadística) GIN2 2020-2021  - Estadística Descriptiva
+author: "Álvaro, Pimentel Lorente; Gastón, Panizza de León; Sergi, Mayol Matos; Alejandro, Rodríguez Arguimbau"
+date: ''
+output:
+  html_document: 
+    toc: yes
+  word_document: default
+  pdf_document: 
+    toc: yes
+    number_sections: yes
+urlcolor: blue
+toccolor: blue
+header-includes:
+  \renewcommand{\contentsname}{Contenidos}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(knitr)
+require(ggplot2)
+require(readxl)
+require(dplyr)
+```
+
+Parte 1. Estadística Descriptiva.
+
+```{r import}
+library(readxl)
+data <- read_excel("prueba4.xlsx", 
+   col_types = c("text", "text", "text", 
+       "text", "text", "numeric", "numeric", 
+       "numeric", "numeric", "numeric", 
+       "numeric", "numeric", "numeric"))
+#View(data)
+```
+
+6.  Pie chart
+
+```{r e6}
+
+#Se genera un dataframe que tiene el Distrito y las veces que se repite
+
+aggregate(data.frame(count = data$distrito), list(value = data$distrito), length);
+frecuencias <- table(data$distrito)  
+tarta2 <- data.frame(group=frecuencias)       
+
+#Aquellos distritos que no compongan más del 1% se juntan en el grupo "Otros"
+
+tarta2$Distritos <- ifelse(tarta2$group.Freq/sum(tarta2$group.Freq)<0.01,"Otros",as.character(tarta2$group.Var1))  
+agrr <- aggregate(group.Freq ~ Distritos, data = tarta2, FUN = sum)  
+
+
+arrange(agrr, desc(group.Freq))
+
+
+#Se genera un gráfico de tipo tarta
+
+ggplot(agrr, aes(x="", y=group.Freq, fill=Distritos)) + geom_bar(stat="identity", width=1, color="white") + coord_polar("y", start=0) + labs(title="Distritos de Shangai") + theme_void()
+
+
+```
+
+
+
+```{r ej9}
+#Se crea un diagrama de dispersión 2 a 2 de las variables "huespedes", "dormitorios", "camas", y "precio"
+pairs(data[,6:9])
+
+```
+```{r ej10}
+#Visualiza una tabla de los coeficientes de relación entre las variables dos a dos "huespedes", "dormitorios", "camas", y "precio"
+cor(data[,6:9], use = "pairwise.complete.obs") 
+#por el parámetro "use" se modifica en comportamiento de la funcion "cor", para que solo tenga en cuenta aquellas relaciones que no tienen ningún valor NA, sea en el eje X o Y
+
+```
